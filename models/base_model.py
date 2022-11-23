@@ -9,7 +9,7 @@ Parent of all classes
 """
 
 
-class BaseModel():
+class BaseModel:
     """Base class for Airbnb clone project
     Methods:
         __init__(self, *args, **kwargs)
@@ -26,6 +26,18 @@ class BaseModel():
 
         """
         if kwargs:
+            for key, val in kwargs.items():
+                if "created_at" == key:
+                    self.created_at = datetime.strptime(kwargs["created_at"],
+                                                        "%Y-%m-%dT%H:%M:%S.%f")
+                elif "updated_at" == key:
+                    self.updated_at = datetime.strptime(kwargs["updated_at"],
+                                                        "%Y-%m-%dT%H:%M:%S.%f")
+                elif "__class__" == key:
+                    pass
+                else:
+                    setattr(self, key, val)
+        elif args:
             for key, val in kwargs.items():
                 if "created_at" == key:
                     self.created_at = datetime.strptime(kwargs["created_at"],
@@ -54,7 +66,7 @@ class BaseModel():
         """
         returns string representation
         """
-        return (self.__str__())
+        return self.__str__()
 
     def save(self):
         """
@@ -67,8 +79,7 @@ class BaseModel():
         """
         Return dic with string formats of times; add class info to dic
         """
-        dic = {}
-        dic["__class__"] = self.__class__.__name__
+        dic = {"__class__": self.__class__.__name__}
         for k, v in self.__dict__.items():
             if isinstance(v, (datetime, )):
                 dic[k] = v.isoformat()
